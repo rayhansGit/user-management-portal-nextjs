@@ -1,12 +1,6 @@
-import { createConnection } from "@node_modules/mysql2";
+import connection from "@app/lib/dbConnection";
 
 export async function GET(request) {
-    console.log('Fetching all users');
-    const token = request.cookies.get('token')?.value;
-    console.log('Token:', token);
-    if (!token) {
-        return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
-    }
     try {
         const users = await getAllUsers();
         return new Response(JSON.stringify({ users }), { status: 200 });
@@ -16,23 +10,10 @@ export async function GET(request) {
     }
 }
 
-function getAllUsers() {
-    const dbConfig = {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-    };
-    const connection = createConnection(dbConfig);
-    return new Promise((resolve, reject) => {
-        connection.query('SELECT * FROM user', (error, results) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
-        connection.end();
-    });
+async function getAllUsers() {
+    const [rows] = await connection.query(
+        'SELECT * FROM user'
+    );
+    return rows;
 }
 

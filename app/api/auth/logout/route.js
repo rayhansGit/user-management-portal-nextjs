@@ -1,11 +1,13 @@
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 export async function POST(req) {
     const token = req.cookies.get('token')?.value;
     if (!token) {
         return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
     try {
-        const user = jwt.verify(token, process.env.JWT_SECRET);
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+        const user =await jwtVerify(token, secret);
         if (!user) {
             return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401 });
         }

@@ -1,17 +1,10 @@
-import { createConnection } from "@node_modules/mysql2";
+import connection from "@app/lib/dbConnection";
+import { jwtVerify } from "jose";
 import { NextResponse } from "@node_modules/next/server";
 import { compare } from "bcrypt";
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+import { SignJWT } from "jose";
 
-dotenv.config();
 
-const dbConfig = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-};
 export const POST = async (req) => {
     const { email, password } = await req.json();
     if (!email || !password) {
@@ -45,27 +38,21 @@ export const GET = async (req) => {
         return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
     try {
-        const user = jwt.verify(token, process.env.JWT_SECRET);
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+        const { payload: user } = await jwtVerify(token, secret);
         return new Response(JSON.stringify({ user }), { status: 200 });
     } catch (error) {
         return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401 });
     }
-}
+};
 
 
 async function findUserByEmail(email) {
-    const connection = createConnection(dbConfig);
-    try {
-        const [rows] = await connection.promise().query(
-            'SELECT * FROM user WHERE email = ? LIMIT 1',
-            [email]
-        );
-        connection.end();
-        return rows[0];
-    } catch (error) {
-        connection.end();
-        throw error;
-    }
+    const [rows] = await connection.execute(
+        'SELECT * FROM user WHERE email = ? LIMIT 1',
+        [email]
+    );
+    return rows[0];
 }
 
 async function verifyPassword(inputPassword, storedPassword) {
@@ -74,10 +61,10 @@ async function verifyPassword(inputPassword, storedPassword) {
 }
 
 async function generateJwtToken(user) {
-    var token = jwt.sign(user, process.env.JWT_SECRET, {
-        expiresIn: '1h' // Token expiration time
-    });
-    console.log(token);
-    // return token;
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const token = await new SignJWT(user)
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("1h")
+        .sign(secret);
     return token;
 }
