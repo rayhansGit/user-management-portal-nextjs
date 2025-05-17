@@ -33,7 +33,10 @@ const Login = () => {
               </div>
             </div>
             <div className="mt-2">
-              <input type="password" name="password" id="password" autoComplete="current-password" required className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input type="password" name="password" id="password" autoComplete="current-password" required
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 
+              outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 
+              sm:text-sm/6" />
             </div>
           </div>
 
@@ -53,19 +56,21 @@ const Login = () => {
       </div>
     </div>
   )
+
+  async function handleLoginRequest(e) {
+    e.preventDefault()
+    // TODO: Implement login logic here
+    console.log('Login request submitted')
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: "asd", password: "qwer" }),
+    })
+    console.log(await response.json())
+  }
 }
 
-const handleLoginRequest = async (e) => {
-  e.preventDefault()
-  // TODO: Implement login logic here
-  console.log('Login request submitted')
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: "asd", password: "qwer" }),
-  })
-  console.log(await response.json())
-}
+
 
 
 
