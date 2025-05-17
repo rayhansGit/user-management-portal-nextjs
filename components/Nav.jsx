@@ -24,7 +24,7 @@ const Nav = () => {
                     <Link href='/login' className="black_btn">
                         Login
                     </Link>
-                    <Link href='/register' className="outline_btn ml-1">
+                    <Link href='/registration' className="outline_btn ml-1">
                         Register
                     </Link>
                 </>
