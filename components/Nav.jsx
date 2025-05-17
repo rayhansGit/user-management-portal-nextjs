@@ -2,8 +2,19 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
 
 const Nav = () => {
+    useEffect(() => {
+            fetch('/api/auth/login/isLoggedIn', { credentials: 'include' })
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    setUser(data?.user || null);
+                    setLoading(false);
+                })
+                .catch(() => setLoading(false));
+       
+    }, []);
     return (
         <nav className='flex-between w-full mb-16 pt-3'>
             <Link href='/' className='flex gap-2 flex-center'>

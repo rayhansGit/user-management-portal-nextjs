@@ -58,20 +58,25 @@ const Login = () => {
   )
 
   async function handleLoginRequest(e) {
-    e.preventDefault()
-    // TODO: Implement login logic here
-    console.log('Login request submitted')
+    e.preventDefault();
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: "asd", password: "qwer" }),
-    })
-    console.log(await response.json())
+      body: JSON.stringify({
+        email: e.target.email.value,
+        password: e.target.password.value
+      }),
+      credentials: 'include', // Important: ensures cookies are sent/received
+    });
+    const data = await response.json();
+    if (response.ok) {
+      // Redirect or update UI
+      window.location.href = '/userlist';
+    } else {
+      // Show error message
+      alert(data.error || 'Login failed');
+    }
   }
 }
-
-
-
-
 
 export default Login
