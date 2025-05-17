@@ -3,13 +3,6 @@ import dotenv from 'dotenv';
 import { createConnection } from '@node_modules/mysql2';
 import { hash } from 'bcrypt';
 
-// Example: Replace with your actual user creation logic and database
-async function createUser({ name, email, password }) {
-    // Hash password, validate input, save to DB, etc.
-    // This is a placeholder for demonstration.
-    return { id: Date.now(), name, email };
-}
-
 dotenv.config();
 
 const dbConfig = {
