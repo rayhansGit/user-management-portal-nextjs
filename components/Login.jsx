@@ -71,7 +71,7 @@ const Login = () => {
     const data = await response.json();
     if (response.ok) {
       // Redirect or update UI
-      window.location.href = '/userlist';
+      window.location.href = '/user-list';
     } else {
       // Show error message
       alert(data.error || 'Login failed');

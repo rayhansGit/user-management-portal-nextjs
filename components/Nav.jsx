@@ -40,8 +40,8 @@ const Nav = () => {
             {/* Only show links after loading is done */}
             {loading ? null : user ? (
                 <div className='sm:flex hidden'>
-                    <Link href='/dashboard' className="black_btn">
-                        Dashboard
+                    <Link href='/user-list' className="black_btn">
+                        User List
                     </Link>
                     <Link href='/logout' className="outline_btn ml-1">
                         Logout
