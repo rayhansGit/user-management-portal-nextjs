@@ -1,4 +1,5 @@
 import { createConnection } from "@node_modules/mysql2";
+import { NextResponse } from "@node_modules/next/server";
 import { compare } from "bcrypt";
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
@@ -26,14 +27,29 @@ export const POST = async (req) => {
         return new Response(JSON.stringify({ error: 'Invalid email or password.' }), { status: 401 });
     }
     const token = await generateJwtToken({ userId: user.id, email: user.email });
-    return new Response(JSON.stringify({ message: 'Login successful.' }), {
-        status: 200,
-        headers: {
-            'Set-Cookie': `token=${token}; HttpOnly; Path=/; Max-Age=3600; 
-            SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
-            'Content-Type': 'application/json'
-        }
+    const response = NextResponse.json({ message: 'Login successful.' });
+
+    response.cookies.set('token', token, {
+        httpOnly: true,
+        path: '/',
+        maxAge: 60 * 60,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
     });
+    return response;
+}
+
+export const GET = async (req) => {
+    const token = req.cookies.get('token')?.value;
+    if (!token) {
+        return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
+    }
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        return new Response(JSON.stringify({ user }), { status: 200 });
+    } catch (error) {
+        return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401 });
+    }
 }
 
 
